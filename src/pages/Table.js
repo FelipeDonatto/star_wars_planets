@@ -3,12 +3,14 @@ import AppContext from '../context/context';
 
 function Table() {
   const { planets, addFilterStatement, filterStatement } = useContext(AppContext);
-  const [filters, setFilters] = useState({
+  const [allFilters, setAllFilters] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('');
+  const [numericFilters, setNumericFilters] = useState({
     column: 'population',
     comparison: 'maior que',
     value: 0,
   });
-  const [filterStatus, setFilterStatus] = useState(false);
+
   function mountTable(element) {
     return (
       <tr key={ element.name }>
@@ -54,26 +56,34 @@ function Table() {
       </tr>
     );
   }
-  function filterPlanets(comparison) {
-    let applyFilter = '';
-    if (comparison === 'maior que') {
-      applyFilter = planets
-        .filter((planet) => planet.name.includes(filterStatement.name)
-       && parseInt(planet[filters.column], 10) > parseInt(filters.value, 10));
-    }
-    if (comparison === 'igual a') {
-      applyFilter = planets
-        .filter((planet) => planet.name.includes(filterStatement.name)
-       && parseInt(planet[filters.column], 10) === parseInt(filters.value, 10));
-    }
-    if (comparison === 'menor que') {
-      applyFilter = planets
-        .filter((planet) => planet.name.includes(filterStatement.name)
-       && parseInt(planet[filters.column], 10) < parseInt(filters.value, 10));
-    }
 
-    return (applyFilter.map((e) => mountTable(e)));
-  }
+  const filterTable = () => {
+    let byName = planets.filter((e) => e.name.includes(filterStatement.name));
+    if (filterStatement.name !== '') {
+      return byName;
+    }
+    if (allFilters.length !== 0) {
+      allFilters.forEach((fltr) => {
+        const { column, value, comparison } = fltr;
+        byName = byName.filter((planet) => {
+          switch (comparison) {
+          case 'maior que':
+            return parseInt(planet[column], 10) > parseInt(value, 10);
+
+          case 'menor que':
+            return parseInt(planet[column], 10) < parseInt(value, 10);
+
+          case 'igual a':
+            return parseInt(planet[column], 10) === parseInt(value, 10);
+
+          default: return true;
+          }
+        });
+      });
+      return byName;
+    }
+    return planets;
+  };
   return (
     <>
       <form>
@@ -84,7 +94,7 @@ function Table() {
         />
         <select
           onChange={ ({ target }) => {
-            setFilters({ ...filters, column: target.value });
+            setNumericFilters({ ...numericFilters, column: target.value });
           } }
           data-testid="column-filter"
         >
@@ -97,7 +107,7 @@ function Table() {
         <select
           data-testid="comparison-filter"
           onChange={ ({ target }) => {
-            setFilters({ ...filters, comparison: target.value });
+            setNumericFilters({ ...numericFilters, comparison: target.value });
           } }
         >
           <option>maior que</option>
@@ -107,15 +117,17 @@ function Table() {
         <input
           data-testid="value-filter"
           type="number"
-          value={ filters.value }
+          value={ numericFilters.value }
           onChange={ ({ target }) => {
-            setFilters({ ...filters, value: target.value });
+            setNumericFilters({ ...numericFilters, value: target.value });
           } }
         />
         <button
           data-testid="button-filter"
           type="button"
-          onClick={ () => { setFilterStatus(true); } }
+          onClick={ () => {
+            setAllFilters([...allFilters, numericFilters]);
+          } }
         >
           Filtro
 
@@ -138,10 +150,7 @@ function Table() {
             <th>Edited</th>
             <th>Url</th>
           </tr>
-          {!filterStatus ? planets
-            .filter((planet) => planet.name.includes(filterStatement.name))
-            .map((element) => mountTable(element))
-            : filterPlanets(filters.comparison)}
+          {planets && filterTable().map((e) => mountTable(e))}
         </tbody>
 
       </table>
