@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from '../App';
 import PlanetsProvider from '../context/provider';
+import userEvent from '@testing-library/user-event';
 
 test('I am your test', () => {
   render(
@@ -20,4 +21,6 @@ test('I am your test', () => {
   expect(valueFilter).toBeInTheDocument();
   expect(buttonFilter).toBeInTheDocument();
   expect(screen.getByRole('table')).toBeInTheDocument();
+  expect(screen.getByRole('button', {  name: /remover todas filtragens/i})).toBeInTheDocument();
+  userEvent.click(buttonFilter)
 });

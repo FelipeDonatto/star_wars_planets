@@ -135,7 +135,42 @@ function Table() {
           Filtro
 
         </button>
+        <button
+          data-testid="button-remove-filters"
+          type="button"
+          onClick={ () => {
+            setAllFilters([]);
+            setOptions(['population',
+              'orbital_period',
+              'diameter',
+              'rotation_period',
+              'surface_water']);
+          } }
+        >
+          Remover todas filtragens
+
+        </button>
       </form>
+      <div className="filters">
+        {allFilters.map((filter) => (
+          <p data-testid="filter" key={ `${filter.comparison}  ${filter.value}` }>
+            {filter.column}
+            {' '}
+            {filter.comparison}
+            {' '}
+            {filter.value}
+            <button
+              type="button"
+              onClick={ () => {
+                setOptions([...options, filter.column]);
+                setAllFilters([...allFilters.filter((filtr) => filtr !== filter)]);
+              } }
+            >
+              Apagar
+
+            </button>
+          </p>))}
+      </div>
       <table>
         <tbody>
           <tr>
