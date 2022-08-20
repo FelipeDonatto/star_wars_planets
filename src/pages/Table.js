@@ -4,7 +4,6 @@ import AppContext from '../context/context';
 function Table() {
   const { planets, addFilterStatement, filterStatement } = useContext(AppContext);
   const [allFilters, setAllFilters] = useState([]);
-  const [activeFilter, setActiveFilter] = useState('');
   const [numericFilters, setNumericFilters] = useState({
     column: 'population',
     comparison: 'maior que',
