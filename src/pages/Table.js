@@ -4,6 +4,11 @@ import AppContext from '../context/context';
 function Table() {
   const { planets, addFilterStatement, filterStatement } = useContext(AppContext);
   const [allFilters, setAllFilters] = useState([]);
+  const [options, setOptions] = useState(['population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water']);
   const [numericFilters, setNumericFilters] = useState({
     column: 'population',
     comparison: 'maior que',
@@ -97,11 +102,8 @@ function Table() {
           } }
           data-testid="column-filter"
         >
-          <option>population</option>
-          <option>orbital_period</option>
-          <option>diameter</option>
-          <option>rotation_period</option>
-          <option>surface_water</option>
+          {options
+            .map((option) => <option key={ option }>{option}</option>)}
         </select>
         <select
           data-testid="comparison-filter"
@@ -126,6 +128,8 @@ function Table() {
           type="button"
           onClick={ () => {
             setAllFilters([...allFilters, numericFilters]);
+            setOptions([...options.filter((e) => e !== numericFilters.column)]);
+            setNumericFilters({ ...numericFilters, column: options[0] });
           } }
         >
           Filtro
