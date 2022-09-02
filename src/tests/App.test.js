@@ -22,5 +22,6 @@ test('I am your test', () => {
   expect(buttonFilter).toBeInTheDocument();
   expect(screen.getByRole('table')).toBeInTheDocument();
   expect(screen.getByRole('button', {  name: /remover todas filtragens/i})).toBeInTheDocument();
+  // test
   userEvent.click(buttonFilter)
 });
